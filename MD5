@@ -1,0 +1,14 @@
+5f37d1bfd9dd74aac96c5ed5bbce1d9c *DESCRIPTION
+e01582106ad2a9ba35c6713bb841b5c5 *NAMESPACE
+e7263d9002afbb7a981194b6ee5e42b6 *R/ogee.R
+41ca7db4c2cdaeb162f37a13f141f0f0 *R/ord.expand.R
+b1fd978c2310ce7e49299917239cc1ec *R/repolr.R
+5059f3cb197d2c22ad20057eb616160b *R/srepolr.R
+18c015d1e802166b6b4c2ed3cc7af8ab *data/HHSpain.rda
+8392fce61dd29a048bf9eb9080ea4767 *data/achilles.rda
+32ec1a4fdfcf1346b3c70061cbcbbbbc *man/HHSpain.Rd
+a1877c1afe344188cc1b9fa462e180f7 *man/achilles.Rd
+e62779715b33b2ee40480b3df0ea3b53 *man/ogee.Rd
+87c42a313b21d9430c32d9b2e97fba37 *man/ord.expand.Rd
+2e34b4cfceec84901f4dbcb88945851a *man/repolr-package.Rd
+d579bc0ec13ec8c262eada28c4806a31 *man/srepolr.Rd
