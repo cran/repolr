@@ -1,7 +1,6 @@
-`ord.expand` <-
+ord.expand <-
 function(scores,data,subjects,categories){
 
- #attach(data,warn.conflicts=FALSE)
  namvars <- names(data)
  nvars <- length(names(data))
  categs1 <- categories-1
@@ -24,9 +23,7 @@ function(scores,data,subjects,categories){
  exdata <- as.data.frame(exdata,row.names=1:exdsize)
  names(exdata) <- namvars
  exdata <- cbind(cuts,exdata)
- #detach(data)
 
  # output
  list(exdata=exdata)
 }
-

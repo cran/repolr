@@ -1,7 +1,8 @@
-repolr <-
+grepolr <-
 function(formula,subjects,data,times,categories,
            scalevalue=1,corstr="independence",maxiter=10,tol=0.001,
-           alpha=0.5,po.test=FALSE,fixed=FALSE){
+           alpha=0.5,po.test=FALSE,fixed=FALSE,poly=3,
+           space=NULL){
 
  # load functions
  
@@ -448,14 +449,33 @@ function(formula,subjects,data,times,categories,
   list(phi=phi,icalph=icalph,gVB=gVB_phi,ggVB=ggVB_phi)
  }
 
+ # function to extract model design matrix
+
+  x.desmat <- function (formula = formula(data), id = id, data = parent.frame(), 
+    subset, na.action, R = NULL, b = NULL, tol = 0.001, maxiter = 25, 
+    family = gaussian, corstr = "independence", Mv = 1, silent = TRUE, 
+    contrasts = NULL, scale.fix = FALSE, scale.value = 1, v4.4compat = FALSE) 
+  {
+    m <- match.call(expand.dots = FALSE)
+    m$R <- m$b <- m$tol <- m$maxiter <- m$link <- NULL
+    m$varfun <- m$corstr <- NULL
+    m$Mv <- m$silent <- m$contrasts <- NULL
+    m$family <- m$scale.fix <- m$scale.value <- m$v4.4compat <- NULL
+    m[[1]] <- as.name("model.frame")
+    m <- eval(m, parent.frame())
+    # output
+    model.matrix(attr(m, "terms"), m, contrasts)
+  }
+
+
  # function to construct score test
 
  score.test <- function(mod.gee,C_mat,X_mat,S_mat,
-            categories,miss_data,corstr){
+            categories,miss_data,corstr,polcuts,poly){
 
   # expanded model coefficients
-  excoeff <- c(mod.gee$coeff[1:(categories-1)],
-      rep(mod.gee$coeff[categories:length(mod.gee$coeff)],(categories-1)))
+    excoeff <- c(polcuts,
+      rep(mod.gee$coeff[(poly+2):length(mod.gee$coeff)],(categories-1)))
 
   # set-up structures
   ressers <- mod.gee$y-mod.gee$fitted
@@ -504,6 +524,7 @@ function(formula,subjects,data,times,categories,
     dW_mat <- dW_mat%*%Vcov_mat%*%t(D_mat)
     dU_mat <- D_mat%*%Vcov_mat%*%ressers[mod.gee$id==i]
    }
+
    W_mat <- W_mat+dW_mat
    U_mat <- U_mat+dU_mat
   } # for i
@@ -512,8 +533,9 @@ function(formula,subjects,data,times,categories,
   list(W_mat=W_mat,U_mat=U_mat)
  }
 
- # introductory message 
 
+
+ # introductory message 
  call <- match.call()
 
  # check correlation structure, maxiter, scalevalue, alpha, categories
@@ -546,8 +568,12 @@ function(formula,subjects,data,times,categories,
  if (is.element("cuts",term_labels)){
   stop("Term name cuts is not permitted")
  }
+
+ # new formula
+ pol_term <- paste("poly(pcuts,",poly,")",sep="")
  formula <- as.formula(paste(resp_label,"~",
-      paste(c("factor(cuts)-1",paste(term_labels,collapse="+")),collapse="+")))
+      paste(c(pol_term,paste(term_labels,collapse="+")),collapse="+")))
+
 
  # expand data
  subjects <- as.character(subjects)
@@ -556,9 +582,26 @@ function(formula,subjects,data,times,categories,
    stop("unknown subject name")
  }
  exdata <- ord.expand(scores=resp_label,data=data,subjects=subjects,categories=categories)
+ 
+ # spacing
+ if(is.null(space)==FALSE){
+  pcuts <- rep(space[2:length(space)],times=dim(data)[1])
+ } else {
+  pcuts <- as.numeric(exdata$exdata$cuts)
+ } 
+ exdata$exdata <- cbind(exdata$exdata,pcuts)
 
- # model matrix
- X_mat <- model.matrix(formula,data=exdata$exdata)
+
+ # fit gee model to get initial parameter estimates
+ mod.gee <- suppressWarnings(gee(formula,data=exdata$exdata,id=exdata$exdata$subjects,family="binomial",
+     scale.fix=TRUE,scale.value=scalevalue,corstr="independence",maxiter=20,
+     silent=TRUE))
+ coeffs <- mod.gee$coeff
+ X_mat <- suppressWarnings(x.desmat(formula,data=exdata$exdata,id=exdata$exdata$subjects,family="binomial",
+     scale.fix=TRUE,scale.value=scalevalue,corstr="independence",maxiter=20,
+     silent=TRUE))
+ polcuts <- X_mat[1:(categories-1),1:(poly+1)]%*%coeffs[1:(poly+1)]
+
 
  # missing value indicator
  full_dat <- (categories-1)*length(times)*max(exdata$exdata$subjects)
@@ -567,11 +610,6 @@ function(formula,subjects,data,times,categories,
  miss_rows <- setdiff(as.character(1:full_dat),rownames(X_mat))
  miss_ind[as.numeric(miss_rows)] <- 1
  miss_data <- as.data.frame(cbind(sub_ind,miss_ind))
-
- # fit gee model to get initial parameter estimates
- mod.gee <- suppressWarnings(gee(formula,data=exdata$exdata,id=exdata$exdata$subjects,family="binomial",
-     scale.fix=TRUE,scale.value=scalevalue,corstr="independence",maxiter=20,silent=TRUE))
- coeffs <- mod.gee$coeff
 
  # fit gee model
  iterct <- 0    # iteration count
@@ -587,7 +625,7 @@ function(formula,subjects,data,times,categories,
    C_mat <- cmat.work(calph=alpha,ctimes=times,corstr=corstr) 
   }
   categories1 <- categories-1
-  S_mat <- smat.work(coeffs[1:categories1],categories)
+  S_mat <- smat.work(polcuts,categories)
   if (corstr=="independence"){
    R_mat <- kronecker(C_mat,S_mat$S_mat)
   } else {
@@ -624,6 +662,7 @@ function(formula,subjects,data,times,categories,
   # stopping criterion
   crit <- abs(1-sqrt(sum((coeffs/mod.gee$coeff)^2)/length(coeffs)))
   coeffs <- mod.gee$coeff
+  polcuts <- X_mat[1:(categories-1),1:(poly+1)]%*%coeffs[1:(poly+1)]
 
   # monitor
   iterct <- iterct+1
@@ -638,7 +677,6 @@ function(formula,subjects,data,times,categories,
   if (iterct<=4){ogstop <- 1} else {ogstop <- crit}
 
   } # end of while
-
 
   # print monitor
   cat("\n")
@@ -676,6 +714,7 @@ function(formula,subjects,data,times,categories,
    }
   }
 
+
   # score test
   if (po.test==TRUE){
    exformula <- as.formula(paste(resp_label,"~",
@@ -683,9 +722,9 @@ function(formula,subjects,data,times,categories,
                   paste(")-1",sep=""),sep=""))
    exX_mat <- model.matrix(exformula,data=exdata$exdata)
    s.test <- score.test(mod.gee=mod.gee,C_mat=C_mat,X_mat=exX_mat,S_mat=S_mat,
-          categories=categories,miss_data=miss_data,corstr=corstr)
+          categories=categories,miss_data=miss_data,corstr=corstr,polcuts=polcuts,poly=poly)
    test_stat <- t(s.test$U_mat)%*%solve(s.test$W_mat)%*%s.test$U_mat
-   test_df <- (categories-2)*(length(mod.gee$coeff)-(categories-1))
+   test_df <- (categories-2)*(length(mod.gee$coeff)-(poly+1))
    test_chi <- pchisq(test_stat,test_df,lower.tail=FALSE)
    cat("\n")
    cat(" Score test = ",round(test_stat,3),": d.f. ",round(test_df,0),
@@ -712,6 +751,7 @@ function(formula,subjects,data,times,categories,
  mod.corr$x <- X_mat
  mod.corr$subjects <- subjects
  mod.corr$categories <- categories
+ mod.corr$poly <- poly
  mod.corr$times <- times
  mod.corr$corstr <- corstr
  mod.corr$crit <- crit
