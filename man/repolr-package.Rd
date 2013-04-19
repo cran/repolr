@@ -7,7 +7,7 @@ Repeated Measures Proportional Odds Logistic Regression using GEE}
 \description{
 The package allows regression models to be fitted to repeated ordinal scores, for the proportional odds model, using a modified version of the generalized estimating equation (GEE) method. The algorithm used estimates the correlation parameter by minimizing the generalized variance of the regression parameters at each step of the fitting algorithm. Parameter estimation is available for the uniform and first-order autoregressive correlation models, for data potentially recorded at irregularly spaced time intervals and with arbitrary patterns of missingness. A sensitivity analysis is used to assess the importance of the correlation model and a score test is available that tests the assumption of proportional odds.}
 \usage{
-repolr(formula, subjects, data, times, categories, scalevalue = 1, corstr = "ar1", maxiter = 10, tol = 0.001, alpha = 0.5, po.test = TRUE, fixed = FALSE)
+repolr(formula, subjects, data, times, categories, scalevalue = 1, corstr = "independence", maxiter = 10, tol = 0.001, alpha = 0.5, po.test = FALSE, fixed = FALSE)
 }
 \arguments{
   \item{formula}{a formula, as for other regression models.}
@@ -24,16 +24,16 @@ repolr(formula, subjects, data, times, categories, scalevalue = 1, corstr = "ar1
   \item{fixed}{a logical variable; if true the correlation is fixed at the initial value (\code{alpha}) during model fitting.}
 }
 \details{
-The \code{repolr} function fits generalized estimating equations using GEE and \code{srepolr} can be used to assess the significance of the estimated correlation parameter.
+The \code{repolr} function fits models for repeated ordinal scores using GEE and \code{srepolr} can be used to assess the significance of the estimated correlation parameter.
 
-The user is required to specify: (i) a data set name (\code{data}), (ii) a model formula (\code{formula}), (iii) a cluster identification variable (\code{subjects}), (iv) a time variable (\code{time}) and (v) the number of categories used for the response variable (\code{categories}). The data set may contain records with missing data for either the response variable or the explanatory variables. The response variable must have at least three ordered categories (\emph{K} greater than or equal to 3) and, as \emph{K} cut-point parameters are estimated, an additional intercept term can not be explicitly included in the model formula. A subject variable, which takes integer values from 1 to \emph{N} with no missing values allowed, indicates the data clusters (patients or experimental units) and a time variable indicates the within cluster ordering; times must be ordered integers starting from one and spaced to indicate the relative distance between successive times. For instance, four observations at equally spaced times would be entered as 1, 2, 3 and 4, whereas if the first two observations were separated by half the time interval of the other observations then coding would be 1, 2, 4 and 6. The data must be pre-sorted by time clusters within each subject, and complete, i.e. where data is missing for a particular time it must be indicated as such. The available options for the correlation model (\code{corstr}) are AR1, uniform, fixed and independence, with default setting AR1. 
+The user is required to specify: (i) a data set name (\code{data}), (ii) a model formula (\code{formula}), (iii) a cluster identification variable (\code{subjects}), (iv) a time variable (\code{time}) and (v) the number of categories used for the response variable (\code{categories}). The data set may contain records with missing data for either the response variable or the explanatory variables. The response variable must have at least three ordered categories (\emph{K} greater than or equal to 3) and, as \emph{K}-1 cut-point parameters are estimated, an additional intercept term can not be explicitly included in the model formula. A subject variable, which takes integer values from 1 to \emph{N} with no missing values allowed, indicates the data clusters (patients or experimental units) and a time variable indicates the within cluster ordering; times must be ordered integers starting from one and spaced to indicate the relative distance between successive times. For instance, four observations at equally spaced times would be entered as 1, 2, 3 and 4, whereas if the first two observations were separated by half the time interval of the other observations then coding would be 1, 2, 4 and 6. The data must be pre-sorted by time clusters within each subject, and complete, i.e. where data is missing for a particular time it must be indicated as such. The available options for the correlation model (\code{corstr}) are AR1, uniform, fixed and independence, with default setting independence. 
 
-Additionally there are a number of other algorithm related options. A fixed scale parameter (\code{scalevalue}) is assumed to be 1, but otherwise it can be set to any positive value. The algorithm is generally robust to the initial value for alpha (default setting = 0.5), however a starting value for alpha can be set. The maximum number of iterations allowed (\code{maxiter}; default setting = 10) can be specified and convergence (\code{tol}) is monitored using the average relative change in the regression parameters at each iteration of the algorithm; the default setting (0.001) is such that the algorithm continues until this drops to below 0.1 percent. The algorithm will fail if the working correlation matrix is not positive definite and, in order to speed convergence for the AR1 and uniform correlation models, is constrained to be between 0.05 and 0.95. The proportional odds assumption can be tested, using a score test, by setting the option \code{po.test} to TRUE (default).
+Additionally there are a number of other algorithm related options. A fixed scale parameter (\code{scalevalue}) is assumed to be 1, but otherwise it can be set to any positive value. The algorithm is generally robust to the initial value for alpha (default setting = 0.5), however a starting value for alpha can be set. The maximum number of iterations allowed (\code{maxiter}; default setting = 10) can be specified and convergence (\code{tol}) is monitored using the average relative change in the regression parameters at each iteration of the algorithm; the default setting (0.001) is such that the algorithm continues until this drops to below 0.1 percent. The algorithm will fail if the working correlation matrix is not positive definite and, in order to speed convergence for the AR1 and uniform correlation models, is constrained to be between 0.05 and 0.95. The proportional odds assumption can be tested, using a score test, by setting the option \code{po.test} to TRUE.
 
 The functions require the user to have pre-installed the latest version of the R GEE solver \code{gee} and the fitted model \code{fitted.mod[[gee]]} inherits the class attributes of this package; correlation model ouput is available from \code{fitted.mod[[corr]]}. }
 
 \value{
-The fitted model is an object of class \dQuote{\code{gee}} and the correlation model has following values in addition to the model set-up variables:
+The fitted model is an object of class \dQuote{\code{gee}} and the correlation model has the following values in addition to the model set-up variables:
   \item{crit}{convergence criterion.}
   \item{score.test}{score test statistic.}
   \item{iter}{number of iterations.}
@@ -43,7 +43,7 @@ The fitted model is an object of class \dQuote{\code{gee}} and the correlation m
 }
 
 \references{
-Parsons, N.R., Costa, M.L., Achten, J. and Stallard, N. (2007). Repeated measures proportional odds logistic regression analysis of ordinal score data in the statistical software package R. (Under Revision; \emph{Computational Statistics and Data Analysis})\cr
+Parsons, N.R., Costa, M.L., Achten, J. and Stallard, N. (2009). Repeated measures proportional odds logistic regression analysis of ordinal score data in the statistical software package R. \emph{Computational Statistics and Data Analysis}, 53, 632-641.\cr
 
 Parsons, N.R., Edmondson, R.N. and Gilmour, S.G. (2006). A generalized estimating equation method for fitting autocorrelated ordinal score data with an application in horticultural research. \emph{Applied Statistics}, 55, 507-524.\cr
 
@@ -51,7 +51,7 @@ Stiger, T.R., Barnhart, H.X., Williamson, J.M. (1999). Testing proportionality i
 }
 \keyword{models}
 \seealso{
-\code{\link{srepolr}}
+\code{\link{grepolr}}, \code{\link{srepolr}}
 }
 
 

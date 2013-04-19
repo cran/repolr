@@ -1,4 +1,4 @@
-`srepolr` <-
+srepolr <-
 function(data,mod.gee,alpha=0.5){
 
  # load functions
@@ -510,9 +510,6 @@ function(data,mod.gee,alpha=0.5){
   list(W_mat=W_mat,U_mat=U_mat)
  }
 
- # introductory message 
- cat(" SREPOLR: 10/03/2008 version 1.1","\n")
-
  # data from fitted model
  coeffs <- as.numeric(mod.gee[["gee"]]$coeff)
  times <- as.vector(mod.gee[["corr"]]$times)
@@ -591,4 +588,3 @@ function(data,mod.gee,alpha=0.5){
  logVB <- log(det(G_mat$G_mat))-2*log(det(H_mat$H_mat))
  logVB
 }
-

@@ -14,7 +14,7 @@ ord.expand(scores, data, subjects, categories)
   \item{categories}{a numeric variable indicating the number of ordinal score categories.}
 }
 \details{
-Mainly for internal use with \code{repolr}.
+Mainly for internal use with \code{repolr} and \code{grepolr}.
 }
 \value{
 An expanded dataframe.
