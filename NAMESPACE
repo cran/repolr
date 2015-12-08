@@ -1,7 +1,18 @@
-# Export all names
-exportPattern(".")
+useDynLib(repolr)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
+S3method("print", "repolr")
+S3method("summary", "repolr")
+S3method("print", "summary.repolr")
+importFrom("methods", "as")
+importFrom("stats", "as.formula")
+importFrom("stats", "binomial")
+importFrom("stats", "complete.cases")
+importFrom("stats", "glm")
+importFrom("stats", "model.matrix")
+importFrom("stats", "pchisq")
+importFrom("stats", "pnorm")
+importFrom("stats", "terms")
+importFrom("stats", "terms.formula")
+importFrom("stats", "update")
 
-# Import all packages listed as Imports or Depends
-import(
-  gee
-)

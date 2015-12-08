@@ -1,17 +1,15 @@
 Package: repolr
 Type: Package
-Title: Repeated measures proportional odds logistic regression
-Version: 2.0
-Date: 2013-04-19
+Title: Repeated Measures Proportional Odds Logistic Regression
+Version: 3.1
+Date: 2015-12-01
 Author: Nick Parsons
 Maintainer: Nick Parsons <nick.parsons@warwick.ac.uk>
-Depends: gee
-Description: Fits regression models to repeated ordinal response
-        variables, using generalized estimating equations implemented
-        in package gee.
+Description: Fits linear models to repeated ordinal scores using GEE methodology.
 License: GPL-3
-URL: http://www.warwick.ac.uk/go/repolr
-Packaged: 2013-04-19 07:37:57 UTC; Nick
-NeedsCompilation: no
+Imports: Rcpp (>= 0.11.3), Matrix, methods
+LinkingTo: Rcpp, RcppArmadillo
+NeedsCompilation: yes
+Packaged: 2015-12-08 13:23:39 UTC; mlsgbf
 Repository: CRAN
-Date/Publication: 2013-04-19 10:29:01
+Date/Publication: 2015-12-08 23:33:49

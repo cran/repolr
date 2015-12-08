@@ -2,33 +2,33 @@
 \alias{QIC}
 \title{Quasilikelihood Information Criterion}
 \description{
-The quasilikelihood information criterion (QIC) developed by Pan (2001) is a modification of the Akaike information criterion (AIC) for models fit by GEE. 
+The quasilikelihood information criterion (QIC) developed by Pan (2001) is a modification of the Akaike information criterion (AIC) for models fit by GEE. \code{QIC} is used for choosing the best correaltion structure and \code{QICu} is used for choosing the best subset of covariates. The quasilikelihood (\code{QLike}) is also reported for completeness. When choosing between two or more models, with different subset of covariates, the one with the smallest \code{QICu} measure is preferred and similarly, when choosing between competing correlation structures, with the same subset of covariates in both, the model with the smallest \code{QIC} measure is preferred.
 }
 \usage{
-QIC(x)
+QIC(object, digits = 3)
 }
 \arguments{
-  \item{x}{is a fitted model using \code{grepolr}}
+  \item{object}{is a fitted model using \code{repolr}}
+  \item{digits}{the number of decimal places to display in reported summaries}
 }
 \value{
-The quasilikelihood for the fitted model.
+ \item{QLike}{model quasilikelihood.}
+ \item{QIC}{model \code{QIC}.}
+ \item{QICu}{model \code{QICu}.} 
 }
 \references{
-Pan, W. (2001). Akaikes information criterion in generalized estimating equations. \emph{Biometrics}, 57, 120-125.\cr
+Pan W. Akaikes information criterion in generalized estimating equations. \emph{Biometrics} 2001; 57:120-125.\cr
 }
 \keyword{models}
 
 \examples{
-## linear polynomial
-data(QoL)
-space <- 1:10
-mod1 <- grepolr(QoL~factor(Time)+factor(Treat),subjects="Patient",
-         data=QoL, categories=10, times=c(1,2,3),poly=1,space=space)
-## cubic polynomial
-mod3 <- grepolr(QoL~factor(Time)+factor(Treat),subjects="Patient",
-         data=QoL, categories=10, times=c(1,2,3),poly=3,space=space)
-QIC(mod1)
-QIC(mod3)
+
+data(HHSpain)
+mod.0 <- repolr(HHSpain~Time, data=HHSpain, categories=4, subjects="Patient",
+            times=c(1,2,5), corr.mod="independence", alpha=0.5)
+QIC(mod.0)
+QIC(update(mod.0, formula = HHSpain~Time + Sex))$QICu
+QIC(update(mod.0, formula = HHSpain~Time * Sex))$QICu
 
 }
 
