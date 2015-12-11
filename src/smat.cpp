@@ -16,7 +16,7 @@ List smat(Rcpp::NumericVector coeff){
     arma::rowvec pexpcoeff = arma::exp(mcoeff);
     arma::rowvec nexpcoeff = arma::exp(-mcoeff);
     arma::mat rs_mat = pexpcoeff.t() * nexpcoeff;
-    arma::mat s_mat = arma::symmatu(sqrt(rs_mat));
+    arma::mat s_mat = arma::symmatu(arma::sqrt(rs_mat));
     arma::mat is_mat = arma::inv_sympd(s_mat);
 
     // construct sparse matrices

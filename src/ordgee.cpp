@@ -27,28 +27,28 @@ Rcpp::List ordgee(Rcpp::List mod, Rcpp::List icormat, Rcpp::List X,
      }   
       
     // calculate new variables
-    unsigned int maxid = max(id);
+    unsigned int maxid = arma::max(id);
     unsigned int ncoeff = beta.n_elem;
     unsigned int nid = ntimes * (categories - 1);
-    arma::sp_mat irmat(nid*maxid,nid*maxid);
+    arma::sp_mat irmat(nid * maxid, nid * maxid);
     if (modtype == "glm"){
-      irmat = arma::speye<arma::sp_mat>(nid*maxid,nid*maxid);
+      irmat = arma::speye<arma::sp_mat>(nid * maxid, nid * maxid);
       } else if (modtype == "gee") {
       irmat = Rcpp::as<arma::sp_mat>(icormat["irmat"]);
     }  
-    arma::rowvec varmat = sqrt(fitted % (1 - fitted));
-    arma::sp_mat vmat = arma::zeros<arma::sp_mat>(nid*maxid,nid*maxid);
-    arma::sp_mat dmat = arma::zeros<arma::sp_mat>(nid*maxid,nid*maxid);
+    arma::rowvec varmat = arma::sqrt(fitted % (1 - fitted));
+    arma::sp_mat vmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
+    arma::sp_mat dmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
     vmat.diag() = 1 / varmat;
-    dmat.diag() = exp(linpred) / pow(1 + exp(linpred), 2);
+    dmat.diag() = arma::exp(linpred) / arma::pow(1 + arma::exp(linpred), 2.0);
     arma::mat nbeta = arma::conv_to<arma::mat>::from(beta);
     arma::mat ilinpred = arma::conv_to<arma::mat>::from(linpred);
     arma::mat iy = arma::conv_to<arma::mat>::from(y);
     arma::mat ifitted = arma::conv_to<arma::mat>::from(fitted);
     arma::mat iresiduals = arma::conv_to<arma::mat>::from(residuals);
-    arma::sp_mat cprod1(nid*maxid,ncoeff), cprod2(nid*maxid,nid*maxid);
-    arma::sp_mat ivcovmat(ncoeff,ncoeff);
-    arma::mat eqgee(ncoeff,1), updatebeta(ncoeff,1);
+    arma::sp_mat cprod1(nid * maxid, ncoeff), cprod2(nid * maxid, nid * maxid);
+    arma::sp_mat ivcovmat(ncoeff, ncoeff);
+    arma::mat eqgee(ncoeff, 1), updatebeta(ncoeff, 1);
 
 
     // loop until stop loop is true
@@ -63,24 +63,24 @@ Rcpp::List ordgee(Rcpp::List mod, Rcpp::List icormat, Rcpp::List X,
        count = count + 1;   
        for(unsigned int i=1; i<=omaxit; i++){
          ilinpred = Xmat * nbeta.t();
-         dmat.diag() = exp(ilinpred) / pow(1 + exp(ilinpred), 2);
-         ifitted = exp(ilinpred) / (exp(ilinpred) + 1);
+         dmat.diag() = arma::exp(ilinpred) / arma::pow(1 + arma::exp(ilinpred), 2.0);
+         ifitted = arma::exp(ilinpred) / (arma::exp(ilinpred) + 1);
          iresiduals = iy - ifitted.t();
-         vmat.diag() = 1 / sqrt((ifitted % (1 - ifitted)));
+         vmat.diag() = 1 / arma::sqrt((ifitted % (1 - ifitted)));
          cprod1 = vmat * dmat * Xmat;
          cprod2 = irmat * vmat; 
          ivcovmat = cprod1.t() * (cprod2 * dmat * Xmat);    
          eqgee = cprod1.t() * (cprod2 * iresiduals.t());
          // superlu may be more efficient for large beta
          updatebeta = arma::spsolve(ivcovmat, eqgee, "lapack");
-         bloop = abs(updatebeta.t() / nbeta);
+         bloop = arma::abs(updatebeta.t() / nbeta);
          if( bloop.max() < 100*otol){break;}
          nbeta = nbeta + updatebeta.t();
 
        }
 
       // control loop and while
-      crit = abs((ibeta-nbeta)/nbeta);
+      crit = arma::abs((ibeta-nbeta)/nbeta);
       if(crit.max() < otol){convergence = true; stoploop = true;}
       if(count >= omaxit){stoploop = true;}
       ibeta = nbeta;
@@ -89,7 +89,7 @@ Rcpp::List ordgee(Rcpp::List mod, Rcpp::List icormat, Rcpp::List X,
 
       // recalculate data for output
       ilinpred = Xmat * nbeta.t();
-      ifitted = exp(ilinpred) / (exp(ilinpred) + 1);
+      ifitted = arma::exp(ilinpred) / (arma::exp(ilinpred) + 1);
       linpred = arma::vectorise(ilinpred,1);
       fitted = arma::vectorise(ifitted,1);
 

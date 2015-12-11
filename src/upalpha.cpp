@@ -41,8 +41,8 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
     // eigen analysis
     arma::vec xheigval, xgeigval;
     arma::mat xheigvec, xgeigvec;
-    eig_sym(xheigval, xheigvec, dhmat);
-    eig_sym(xgeigval, xgeigvec, dgmat);
+    arma::eig_sym(xheigval, xheigvec, dhmat);
+    arma::eig_sym(xgeigval, xgeigvec, dgmat);
     arma::vec heigval = arma::flipud(xheigval);
     arma::mat heigvec = arma::fliplr(xheigvec);
     arma::vec geigval = arma::flipud(xgeigval);
@@ -51,9 +51,9 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
 
     // construct sparse matrix
     arma::mat cprodh = heigvec.t() * dghmat * heigvec;
-    double gldethmat = sum(cprodh.diag() / heigval);
+    double gldethmat = arma::sum(cprodh.diag() / heigval);
     arma::mat cprodg = geigvec.t() * dggmat * geigvec;
-    double gldetgmat = sum(cprodg.diag() / geigval);
+    double gldetgmat = arma::sum(cprodg.diag() / geigval);
     // hmat
     arma::mat heigdenom = arma::repmat(heigval,1,ncoeff) - arma::repmat(heigval.t(),ncoeff,1);
     arma::mat ex1heigvec = arma::repmat(heigvec, ncoeff, 1);
@@ -81,12 +81,12 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
     // hmat
     arma::mat kheigdenom(ncoeff, ncoeff);
     arma::uvec qh;
-    arma::vec vkheigdenom(ncoeff*ncoeff), ddheig(ncoeff);
+    arma::vec vkheigdenom(ncoeff * ncoeff), ddheig(ncoeff);
     arma::sp_mat fhmat(ncoeff,ncoeff), dheig(ncoeff,ncoeff), bhmat(ncoeff*ncoeff, ncoeff*ncoeff); 
     // gmat
     arma::mat kgeigdenom(ncoeff, ncoeff);
     arma::uvec qg;
-    arma::vec vkgeigdenom(ncoeff*ncoeff), ddgeig(ncoeff);
+    arma::vec vkgeigdenom(ncoeff * ncoeff), ddgeig(ncoeff);
     arma::sp_mat fgmat(ncoeff,ncoeff), dgeig(ncoeff,ncoeff), bgmat(ncoeff*ncoeff, ncoeff*ncoeff);
    
 
@@ -118,18 +118,18 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
 
     // calculate gvb and ggvb
     double ggldethmat = arma::as_scalar(sum(ddheig / heigval)) -
-                         arma::as_scalar(sum( pow(cprodh.diag() / heigval, 2)));
-    double ggldetgmat = arma::as_scalar(sum(ddgeig / geigval)) -
-                         arma::as_scalar(sum( pow(cprodg.diag() / geigval, 2)));
+                         arma::as_scalar(arma::sum(arma::pow(cprodh.diag() / heigval, 2.0)));
+    double ggldetgmat = arma::as_scalar(arma::sum(ddgeig / geigval)) -
+                         arma::as_scalar(arma::sum(arma::pow(cprodg.diag() / geigval, 2.0)));
     double gvb = gldetgmat - 2 * gldethmat;
     double ggvb = ggldetgmat - 2 * ggldethmat;
 
     // update alpha
-    double phi = log(alpha) - log(1 - alpha);
-    double gphi = exp(phi) / pow(1 + exp(phi), 2);
-    double ggphi = (exp(phi)*(1 - exp(phi))) / pow(1+exp(phi), 3);
+    double phi = std::log(alpha) - std::log(1 - alpha);
+    double gphi = std::exp(phi) / std::pow(1 + std::exp(phi), 2.0);
+    double ggphi = (std::exp(phi)*(1 - std::exp(phi))) / std::pow(1 + std::exp(phi), 3.0);
     double gvbphi = gphi * gvb;
-    double ggvbphi = ggphi * gvb + pow(gphi, 2) * ggvb;
+    double ggvbphi = ggphi * gvb + std::pow(gphi, 2.0) * ggvb;
     double phiinc = gvbphi / std::abs(ggvbphi);
     double nphi, nalpha;
     if (std::abs(phiinc) > 1){
@@ -138,7 +138,7 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
          else {
        nphi = phi - phiinc;
      }
-    nalpha = exp(nphi) / (1 + exp(nphi));
+    nalpha = std::exp(nphi) / (1 + std::exp(nphi));
     if (nalpha > 0.95){nalpha = 0.95;}
     if (nalpha < 0.05){nalpha = 0.05;}
 
@@ -162,14 +162,14 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
     // variance matrices
     arma::mat xgmat(gmat), xgmatl(gmatl), xgmatu(gmatu), 
               xhmat(hmat), xhmatl(hmatl), xhmatu(hmatu);
-    double ldetvcov = log(arma::det(xgmat)) - 2 * log(arma::det(xhmat));
-    double ldetvcovl = log(arma::det(xgmatl)) - 2 * log(arma::det(xhmatl));
-    double ldetvcovu = log(arma::det(xgmatu)) - 2 * log(arma::det(xhmatu));
+    double ldetvcov = std::log(arma::det(xgmat)) - 2 * std::log(arma::det(xhmat));
+    double ldetvcovl = std::log(arma::det(xgmatl)) - 2 * std::log(arma::det(xhmatl));
+    double ldetvcovu = std::log(arma::det(xgmatu)) - 2 * std::log(arma::det(xhmatu));
 
     // gvb, ggvb and alpha
     double gvbphi = (ldetvcovu - ldetvcovl)/(2 * arma::as_scalar(h));
-    double ggvbphi = (ldetvcovu - 2 * ldetvcov + ldetvcovl)/(pow(arma::as_scalar(h), 2));
-    double phi = log(alpha) - log(1 - alpha);
+    double ggvbphi = (ldetvcovu - 2 * ldetvcov + ldetvcovl)/(std::pow(arma::as_scalar(h), 2.0));
+    double phi = std::log(alpha) - std::log(1 - alpha);
     double phiinc = gvbphi / std::abs(ggvbphi);
     double nphi, nalpha;
     if (std::abs(phiinc) > 1){
@@ -178,7 +178,7 @@ Rcpp::List upalpha(Rcpp::List hgmat, double alpha, Rcpp::String diffmeth, double
          else {
        nphi = phi - phiinc;
      }
-    nalpha = exp(nphi) / (1 + exp(nphi));
+    nalpha = std::exp(nphi) / (1 + std::exp(nphi));
     if (nalpha > 0.95){nalpha = 0.95;}
     if (nalpha < 0.05){nalpha = 0.05;}
 

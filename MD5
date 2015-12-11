@@ -1,4 +1,4 @@
-da7f18449e68b0af741cc41f062459bc *DESCRIPTION
+b9518790964ca7b1beb0d37e9fd00059 *DESCRIPTION
 a3ceb7dde82f0e6dd8f409cefd7e5ff1 *NAMESPACE
 8b7f26112a6071eb867a6b83388ae2df *R/QIC.R
 ba2f815884ee1870f97103a85b13a71f *R/RcppExports.R
@@ -6,7 +6,7 @@ ba2f815884ee1870f97103a85b13a71f *R/RcppExports.R
 87648eaeae04f9eadf5fd0a42bc4ff60 *R/polycuts.R
 a6ae3de499512ba96a5a1b96ecd9be09 *R/print.repolr.R
 4ae344ce7fde3c634c8c97878f2c45d0 *R/print.summary.repolr.R
-fbc0848fc1bd1907811bc537ce0452b4 *R/repolr.R
+834bccad32f89b59d5b600a89a0593ec *R/repolr.R
 d7a2b4382c7d0a66efe267182ba9bce3 *R/summary.repolr.R
 17451e64f840b841d93bfde72dcd98ad *data/HHSpain.txt.gz
 42f417ac8f55ae9c0d96c4dfe4597b89 *data/QoL.txt.gz
@@ -26,10 +26,10 @@ d17ee9a9744c109d55becf804eb5a023 *man/ord.expand.Rd
 2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars
 8d46d69896a1f1d31ed76035a0e49d67 *src/Makevars.win
 748944742271de69d633654361308fd7 *src/RcppExports.cpp
-3f3cb91d5621970c40fdbd698d2f1d9e *src/cmat.cpp
-09e9874c91168d8c40027ebc901270e8 *src/hgmat.cpp
-44621c8f223027bfd15bcf1b41ffa160 *src/icormat.cpp
-034c8150691ef1a121b130ff22a6094d *src/ordgee.cpp
-7c0c5fe26539164db415a3854753f46f *src/potest.cpp
-db194b3e22622eaed321492a159d56dd *src/smat.cpp
-2707dcc4e27759e7859866f357bb6b36 *src/upalpha.cpp
+7f5b4a3a225972d43f827eac4a244ddc *src/cmat.cpp
+afe701906d1eaa088890618e56289362 *src/hgmat.cpp
+65b9e443512ecfe91b508fc2e5d6018b *src/icormat.cpp
+fe7ee05c1bfce7827e0bb4cafb58d39d *src/ordgee.cpp
+3ad308a9d880b40345d56f1a306c99e5 *src/potest.cpp
+43fffe4c02634499490daaeb1a360f85 *src/smat.cpp
+b77186a982ee38331ecb51cb1ee00a3f *src/upalpha.cpp

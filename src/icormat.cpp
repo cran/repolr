@@ -19,7 +19,7 @@ Rcpp::List icormat(List mod, List smat, List cmat, Rcpp::String modtype){
      }  
 
     // calculate new variables
-    unsigned int maxid = max(id);
+    unsigned int maxid = arma::max(id);
     unsigned int ntimes = icmat.n_rows;
     unsigned int cats = ismat.n_rows + 1;
     unsigned int nid = ntimes * (cats - 1);

@@ -21,16 +21,16 @@ Rcpp::List potest(Rcpp::List mod, Rcpp::List hgmat, Rcpp::List X,
     arma::vec nexbeta = arma::vectorise(arma::repmat(beta.cols(categories - 1, beta.n_cols - 1), categories-1, 1));
     arma::mat exbeta = arma::join_rows(beta.cols(0, categories - 2), nexbeta.t());
     arma::mat linpred = Xmat * exbeta.t();
-    arma::mat fitted = exp(linpred) / (exp(linpred) + 1);
-    unsigned int maxid = max(id);
+    arma::mat fitted = arma::exp(linpred) / (arma::exp(linpred) + 1);
+    unsigned int maxid = arma::max(id);
     unsigned int nid = ntimes * (categories - 1);
     unsigned int nbeta = beta.n_cols;
 
-    arma::mat varmat = sqrt(fitted % (1 - fitted));
+    arma::mat varmat = arma::sqrt(fitted % (1 - fitted));
     arma::sp_mat dmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
     arma::sp_mat vmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
     vmat.diag() = 1 / varmat.t();
-    dmat.diag() = exp(linpred) / pow(1 + exp(linpred), 2);
+    dmat.diag() = arma::exp(linpred) / arma::pow(1 + arma::exp(linpred), 2.0);
     arma::sp_mat ddmat = Xmat.t() * dmat;
     
     // test statistic

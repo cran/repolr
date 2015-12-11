@@ -140,7 +140,7 @@ function(formula, subjects, data, times, categories, corr.mod = "independence",
  }
 
  # output
- ordgee.mod <- list(title = "repolr: 2015-12-01 version 3.0",
+ ordgee.mod <- list(title = "repolr: 2015-12-11 version 3.2",
                           call = call,
                           data = call[["data"]],
                           subjects = subjects,

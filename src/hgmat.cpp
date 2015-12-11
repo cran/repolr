@@ -34,24 +34,24 @@ Rcpp::List hgmat(List mod, List smat, List cmat, Rcpp::List X, Rcpp::String modt
      }  
 
     // calculate new variables
-    unsigned int maxid = max(id);
+    unsigned int maxid = arma::max(id);
     unsigned int ntimes = icmat.n_rows;
     unsigned int cats = ismat.n_rows + 1;
     unsigned int nid = ntimes * (cats - 1);
     arma::mat mismat(ismat);
     arma::mat micmat(icmat), mgicmat(gicmat), mggicmat(ggicmat);
-    arma::rowvec varmat = sqrt(fitted % (1 - fitted));
-    arma::sp_mat dmat = arma::zeros<arma::sp_mat>(nid*maxid,nid*maxid);
-    arma::sp_mat vmat = arma::zeros<arma::sp_mat>(nid*maxid,nid*maxid);
+    arma::rowvec varmat = arma::sqrt(fitted % (1 - fitted));
+    arma::sp_mat dmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
+    arma::sp_mat vmat = arma::zeros<arma::sp_mat>(nid * maxid, nid * maxid);
     vmat.diag() = 1 / varmat;
-    dmat.diag() = exp(linpred) / pow(1 + exp(linpred), 2);
+    dmat.diag() = arma::exp(linpred) / arma::pow(1 + arma::exp(linpred), 2.0);
     arma::sp_mat ddmat = Xmat.t() * dmat;
      
     // block diagonal locations
     arma::mat clocblock = arma::linspace(0, nid * maxid-1, nid * maxid);
     arma::mat vrow = arma::repmat(clocblock,1,nid);
     clocblock.reshape(nid, maxid);
-    arma::mat vcol = arma::repmat(clocblock.t(),1,nid);
+    arma::mat vcol = arma::repmat(clocblock.t(), 1, nid);
     arma::vec loccol = arma::vectorise(vcol.t());
     arma::vec locrow = arma::vectorise(vrow.t());
     arma::mat locats = arma::join_rows(locrow,loccol);
@@ -65,11 +65,11 @@ Rcpp::List hgmat(List mod, List smat, List cmat, Rcpp::List X, Rcpp::String modt
 
     // gicormat and ggicormat
     arma::mat gicor = arma::kron(mgicmat, mismat);
-    arma::mat fgicor = arma::repmat(gicor,1, maxid);
+    arma::mat fgicor = arma::repmat(gicor, 1, maxid);
     arma::vec vgicor = arma::vectorise(fgicor);
     arma::sp_mat gicormat(ulocats, vgicor);
     arma::mat ggicor = arma::kron(mggicmat, mismat);
-    arma::mat fggicor = arma::repmat(ggicor,1, maxid);
+    arma::mat fggicor = arma::repmat(ggicor, 1, maxid);
     arma::vec vggicor = arma::vectorise(fggicor);
     arma::sp_mat ggicormat(ulocats, vggicor);
   
@@ -87,21 +87,21 @@ Rcpp::List hgmat(List mod, List smat, List cmat, Rcpp::List X, Rcpp::String modt
     // between category covariance blocks
     arma::mat qssmat(ssmat);
     qssmat.reshape((cats - 1) * (cats - 1) ,1);
-    arma::mat fssmat = repmat(qssmat, ntimes*maxid, 1);
+    arma::mat fssmat = arma::repmat(qssmat, ntimes * maxid, 1);
     arma::vec vssmat = arma::vectorise(fssmat);
-    arma::mat fvarmat1 = repmat(varmat, (cats - 1), 1);
+    arma::mat fvarmat1 = arma::repmat(varmat, (cats - 1), 1);
     arma::vec varmat1 = arma::vectorise(fvarmat1);
     arma::mat nvarmat = arma::conv_to<arma::mat>::from(varmat);   
-    nvarmat.reshape((cats - 1), ntimes*maxid);
-    arma::mat fvarmat2 = repmat(nvarmat, (cats - 1), 1);
+    nvarmat.reshape((cats - 1), ntimes * maxid);
+    arma::mat fvarmat2 = arma::repmat(nvarmat, (cats - 1), 1);
     arma::vec varmat2 = arma::vectorise(fvarmat2);
     arma::vec insvcov = varmat1 % vssmat % varmat2;
 
     // between category covariance block locations
-    arma::mat vcovblock = arma::linspace(0, nid * maxid-1, nid * maxid);
-    arma::mat rvcovblock = arma::repmat(vcovblock.t(),(cats-1),1);
+    arma::mat vcovblock = arma::linspace(0, nid * maxid - 1, nid * maxid);
+    arma::mat rvcovblock = arma::repmat(vcovblock.t(),(cats - 1), 1);
     vcovblock.reshape((cats-1), ntimes * maxid);
-    arma::mat cvcovblock = arma::repmat(vcovblock.t(), 1, (cats-1));
+    arma::mat cvcovblock = arma::repmat(vcovblock.t(), 1, (cats - 1));
     arma::vec rowvcov = arma::vectorise(rvcovblock);
     arma::vec colvcov = arma::vectorise(cvcovblock.t());
     arma::mat blocats = arma::join_rows(rowvcov,colvcov);
