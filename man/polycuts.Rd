@@ -1,18 +1,18 @@
 \name{polycuts}
 \alias{polycuts}
 \title{
-Provide Estimates of Cut-point Parameters for repolr
+Estimates Cut-point Parameters for Fitted repolr Model
 }
 \description{
-After fitting a model using \code{repolr}, function \code{polycuts} gives estimates and standard errors of the \emph{K}-1 cut-point parameters, based on the polynomial model from the fit of \code{repolr}. Polynomial cut-point parameter estimates from the orginal model are also shown.
+After fitting a model using \code{repolr}, function \code{polycuts} gives estimates and standard errors for the \emph{K}-1 cut-point parameters, based on the polynomial model from the fit of \code{repolr}. Polynomial cut-point parameter estimates from the orginal model are also shown.
 }
 \usage{
 polycuts(object, digits = 3, robust.var = TRUE)
 }
 \arguments{
-  \item{object}{is a fitted model using \code{repolr}}
-  \item{digits}{the number of decimal places to display in reported summaries}
-  \item{robust.var}{a logical variable: if \code{TRUE} standard errors are based on robust variance estimates, otherwise naive estimates are used}  
+  \item{object}{is a model fitted using \code{repolr}.}
+  \item{digits}{the number of decimal places to display in reported summaries.}
+  \item{robust.var}{a logical variable: if \code{TRUE} standard errors are based on robust variance estimates, otherwise naive estimates are used.}  
 }
 \value{
  \item{coef}{polynomial parameter estimates from \code{repolr}.}

@@ -2,7 +2,7 @@
 \alias{ord.expand}
 \title{Expand Ordinal Data for Model Fitting with repolr}
 \description{
-Expands ordinal score data into appropriate form, \emph{K}-1 new binary variables for ordinal score with \emph{K} categories, for model fitting using \code{repolr}. 
+Expands ordinal score data into an appropriate form, \emph{K}-1 new binary variables for an ordinal score with \emph{K} categories, for model fitting using \code{repolr}. 
 }
 \usage{
 ord.expand(space, formula, times, poly, data, subjects, categories)

@@ -1,7 +1,7 @@
 \name{mobility}
 \alias{mobility}
 \docType{data}
-\title{Mobility after hip fracture fixation surgery}
+\title{Mobility after Hip Fracture Fixation Surgery}
 \description{
 Patient mobility score after hip fracture fixation surgery, using two distinct procedures. 
 }

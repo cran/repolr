@@ -2,10 +2,10 @@
 \alias{summary.repolr}
 \alias{print.summary.repolr}
 \title{
-Summary of repolr models
+Summary of Fitted repolr Model
 }
 \description{
-Function to summarise fit of repolr model
+Function to summarise the fit of a repolr model.
 }
 \usage{
 \method{summary}{repolr}(object, digits, robust.var, \dots)
